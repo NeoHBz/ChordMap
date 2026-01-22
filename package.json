@@ -32,6 +32,7 @@
     "productivity",
     "learning"
   ],
+  "icon": "resources/app_icon.ico",
   "main": "./out/extension.js",
   "activationEvents": [
     "onStartupFinished"
@@ -64,7 +65,7 @@
         {
           "id": "chordmap",
           "title": "ChordMap",
-          "icon": "resources/app_icon.ico"
+          "icon": "resources/icon.svg"
         }
       ]
     },
