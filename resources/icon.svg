@@ -1,0 +1,21 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Keyboard key symbol representing chord chains -->
+  <rect x="20" y="30" width="35" height="35" rx="5" stroke="currentColor" stroke-width="4" fill="none"/>
+  <text x="37.5" y="55" font-family="monospace" font-size="20" text-anchor="middle" fill="currentColor">⌘</text>
+  
+  <rect x="65" y="30" width="35" height="35" rx="5" stroke="currentColor" stroke-width="4" fill="none"/>
+  <text x="82.5" y="55" font-family="monospace" font-size="20" text-anchor="middle" fill="currentColor">K</text>
+  
+  <!-- Arrow showing chord continuation -->
+  <path d="M 37 70 L 37 85 L 82 85 L 82 70" stroke="currentColor" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Next key in chain -->
+  <rect x="65" y="95" width="35" height="35" rx="5" stroke="currentColor" stroke-width="4" fill="currentColor" fill-opacity="0.3"/>
+  <text x="82.5" y="120" font-family="monospace" font-size="20" text-anchor="middle" fill="currentColor">S</text>
+  
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="currentColor"/>
+    </marker>
+  </defs>
+</svg>

@@ -1,0 +1,247 @@
+{
+  "name": "chordmap",
+  "displayName": "ChordMap",
+  "description": "Visualize and explore complex keybinding chains in VS Code",
+  "version": "0.1.0",
+  "publisher": "neohbz",
+  "author": {
+    "name": "neohbz",
+    "email": "neohbz@gmail.com",
+    "url": "https://neohbz.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neohbz/chordmap"
+  },
+  "bugs": {
+    "url": "https://github.com/neohbz/chordmap/issues",
+    "email": "neohbz@gmail.com"
+  },
+  "homepage": "https://neohbz.com",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "keybindings",
+    "keyboard shortcuts",
+    "chords",
+    "productivity",
+    "learning"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "scripts": {
+    "vscode:prepublish": "bun run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "bun run compile",
+    "lint": "eslint src --ext ts",
+    "install:fallback": "command -v bun >/dev/null 2>&1 || npm install",
+    "build": "rm chordmap-*.vsix || true && bunx vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.x",
+    "@typescript-eslint/parser": "^6.x",
+    "eslint": "^8.x",
+    "typescript": "^5.3.0",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.2.0",
+    "fuse.js": "^7.0.0"
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "chordmap",
+          "title": "ChordMap",
+          "icon": "resources/app_icon.ico"
+        }
+      ]
+    },
+    "views": {
+      "chordmap": [
+        {
+          "id": "chordmapExplorer",
+          "name": "Keybinding Explorer",
+          "when": "config.chordMap.viewMode != 'blocks'",
+          "icon": "resources/icon.svg"
+        },
+        {
+          "id": "chordmapBlocksView",
+          "name": "Keybinding Explorer",
+          "type": "webview",
+          "when": "config.chordMap.viewMode == 'blocks'",
+          "icon": "resources/icon.svg"
+        },
+        {
+          "id": "chordmapLiveTracker",
+          "name": "⌨️ Live Tracker",
+          "type": "webview",
+          "visibility": "collapsed",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "chordmap.syncKeybindings",
+        "title": "Sync Keybindings",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "chordmap.refreshView",
+        "title": "Refresh View",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "chordmap.search",
+        "title": "Search Keybindings",
+        "icon": "$(search)"
+      },
+      {
+        "command": "chordmap.openSettings",
+        "title": "Open ChordMap Settings",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "chordmap.toggleLiveMode",
+        "title": "Toggle Live Chord Tracking",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "chordmap.toggleCommandDisplay",
+        "title": "Toggle Command ID/Title Display",
+        "icon": "$(symbol-text)"
+      },
+      {
+        "command": "chordmap.setViewMode",
+        "title": "Set View Mode",
+        "icon": "$(layout)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "chordmap.syncKeybindings",
+          "when": "view == chordmapExplorer || view == chordmapBlocksView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "chordmap.refreshView",
+          "when": "view == chordmapExplorer || view == chordmapBlocksView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "chordmap.search",
+          "when": "view == chordmapExplorer || view == chordmapBlocksView",
+          "group": "navigation@3"
+        },
+        {
+          "command": "chordmap.openSettings",
+          "when": "view == chordmapExplorer || view == chordmapBlocksView",
+          "group": "navigation@5"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "ChordMap",
+      "properties": {
+        "chordMap.autoSync": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically sync keybindings on startup and when the file changes"
+        },
+        "chordMap.enableFileWatcher": {
+          "type": "boolean",
+          "default": true,
+          "description": "Watch keybindings.json for changes and prompt to re-sync"
+        },
+        "chordMap.showDisabledBindings": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show disabled keybindings in the tree view"
+        },
+        "chordMap.showWhenClauses": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display 'when' clause conditions for context-dependent bindings"
+        },
+        "chordMap.showCommands": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show command IDs alongside their labels"
+        },
+        "chordMap.showCategories": {
+          "type": "boolean",
+          "default": true,
+          "description": "Group keybindings by derived categories"
+        },
+        "chordMap.categoryDerivationMethod": {
+          "type": "string",
+          "enum": [
+            "simple",
+            "metadata",
+            "off"
+          ],
+          "default": "simple",
+          "enumDescriptions": [
+            "Derive categories from command namespace prefix (e.g., git.* → Git)",
+            "Attempt to use VS Code's internal command metadata (experimental)",
+            "Disable category grouping"
+          ],
+          "description": "Method for deriving keybinding categories"
+        },
+        "chordMap.showSyncMetadata": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display last sync timestamp and editor name"
+        },
+        "chordMap.compactView": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use condensed tree view layout"
+        },
+        "chordMap.useSymbolsInLiveMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display modifier symbols (⌘, ⌥, ⌃, ⇧) instead of text in live mode"
+        },
+        "chordMap.viewMode": {
+          "type": "string",
+          "enum": [
+            "tree",
+            "list",
+            "blocks"
+          ],
+          "default": "tree",
+          "enumDescriptions": [
+            "Hierarchical tree view showing chord sequences",
+            "Flat list of all keybindings",
+            "Grid layout with cards for each keybinding"
+          ],
+          "description": "Visual layout for displaying keybindings"
+        },
+        "chordMap.showCommandTitle": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show command title instead of command ID as primary label"
+        },
+        "chordMap.autoExpandOnSearch": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically expand tree items when searching or filtering"
+        }
+      }
+    }
+  }
+}
